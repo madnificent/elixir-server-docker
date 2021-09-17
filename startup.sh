@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "dev env: " $DEVELOPMENT
+
 if [[ "$DEVELOPMENT" != "" ]]
 then
     sh /setup.sh
@@ -28,10 +30,17 @@ fi
 
 cd /app
 
-if [[ ! -z "${LOG_ELIXIR_STARTUP_COMMAND}" ]]
-then
-  echo -n "Launching Elixir on IP $IP_ADDRESS as "
-  echo "MIX_ENV=prod elixir $CMD_OPTS --erl \"$ERL_OPTS\" -pa _build/prod/consolidated -S mix run --no-halt"
-fi
+# if [[ ! -z "${LOG_ELIXIR_STARTUP_COMMAND}" ]]
+# then
+#   echo -n "Launching Elixir on IP $IP_ADDRESS as "
+#   echo "MIX_ENV=prod elixir $CMD_OPTS --erl \"$ERL_OPTS\" -pa _build/prod/consolidated -S mix run --no-halt"
+# fi
 
-MIX_ENV=prod elixir $CMD_OPTS --erl "$ERL_OPTS" -pa _build/prod/consolidated -S mix run --no-halt
+
+if [[ "$DEVELOPMENT" != "" ]]
+then
+    echo "Starting dev with `iex -S mix run --no-halt`"
+    elixir -S mix run --no-halt
+else
+    MIX_ENV=prod elixir $CMD_OPTS --erl "$ERL_OPTS" -pa _build/prod/consolidated -S mix run --no-halt
+fi
